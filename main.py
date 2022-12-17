@@ -91,3 +91,4 @@ class Product:
 
     def __repr__(self) -> str:
         return self.title
+
