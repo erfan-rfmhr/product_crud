@@ -1,7 +1,19 @@
 from product import Product
 
-p = Product('test')
+def run():
+    car = Product('car')
+    bike = Product('bike')
+    bike.create()
+    car.create()
+    car.update(title='car2', price=100)
+    print(car.reade())
+    print()
+    car.delete()
+    bike.update(regular_price=30)
+    print(bike.reade())
+    bike.delete()
+    print()
+    print(Product.reade_all())
 
-print(type(Product))    # type of every class in python is "type"
-print(type(p))
-print(isinstance(p, Product))   # output is True because p is an instance of Product class
+if __name__ == '__main__':
+    run()

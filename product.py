@@ -15,7 +15,7 @@ class Product:
         assert manage_stoke>=0, 'manage_stoke is not greater than or equal to 0'
         assert stoke_quantity>=0, 'stoke_quantity is not greater than or equal to 0'
         Product.__auto_increment_id += 1
-        self.__id = Product.__auto_increment_id
+        self.id_ = Product.__auto_increment_id
         self.title = title
         self.short_description = short_description
         self.description = description
@@ -31,30 +31,40 @@ class Product:
         self.date_created_gmt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.date_modified_gmt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-    def add_product(self):
+    def create(self):
         """Add the current product to list of products"""
-        Product.__products[self] = self.__id
+        Product.__products[self] = self.id_
+
+    def update(self, **kwargs):
+        """Update the current product object"""
+        for key, value in kwargs.items():
+            if key in self.__dict__:
+                if key in ('price', 'regular_price', 'sale_price', 'manage_stoke', 'stoke_quantity'):
+                    assert isinstance(value, (int, float)), f'{key} has to be a number'
+                    assert value >= 0, f'{key} has to be positive'
+                    self.__dict__[key] = value
+                else:
+                    self.__dict__[key] = value
+            else:
+                print(f'No attribute called {key}')
+        self.date_modified_gmt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-    @property
-    def user_id(self):
-        return self.__id
-    
-    def delete_product(self):
+    def delete(self):
         """Delete the current product object"""
         try:
             del Product.__products[self]
-            print('-'*5,f'\nProduct {self.title} (id {self.__id}) has been deleted','-'*5)
+            print('-'*5,f'\nProduct {self.title} (id {self.id_}) has been deleted','-'*5)
         except:
-            print('-'*5,f'\nProduct {self.title} (id {self.__id}) has already been deleted','-'*5)
+            print('-'*5,f'\nProduct {self.title} (id {self.id_}) has already been deleted','-'*5)
             
-    @staticmethod
-    def get_all_products():
-        """return all products from list of products"""
-        return tuple(Product.__products.keys())
-    
-    def get_info(self):
+    def read(self):
         """Return all attributes as a dictionary"""
         return self.__dict__
+
+    @staticmethod
+    def read_all():
+        """return all products from list of products"""
+        return tuple(Product.__products.keys())
         
     def __repr__(self) -> str:
-        return self.title + ' ' + 'id:' + str(self.__id)
+        return f"({self.title}, {self.id_})"
