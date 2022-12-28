@@ -1,70 +1,90 @@
 from datetime import datetime
 
-class Product:
-    __products = {} # stores object and id
-    __auto_increment_id = -1
-        
-    def __init__(self, title:str, short_description:str='', description:str='',
-                 slug:str='', permalink:str='', price:float=0, regular_price:float=0,
-                 sale_price:float=0, manage_stoke:int=0, stoke_quantity:int=0,
-                 isAvailable=True, isVisible=True):
-        
-        assert price>=0, 'price is not greater than or equal to 0'
-        assert regular_price>=0, 'regular price is not greater than or equal to 0'
-        assert sale_price>=0, 'sale price is not greater than or equal to 0'
-        assert manage_stoke>=0, 'manage_stoke is not greater than or equal to 0'
-        assert stoke_quantity>=0, 'stoke_quantity is not greater than or equal to 0'
-        Product.__auto_increment_id += 1
-        self.id_ = Product.__auto_increment_id
+class Product():
+
+    _product_list = {}
+
+    def __init__(self, title:str, short_description:str , description:str  , slug:str, permalink:str, sku:str, price:float, regular_price:float,
+                 sale_price:float, manage_stock:bool, stock_quantity:int, date_created_gmt :int, date_modified_gmt:int,category_id:int = 0, 
+                 is_visible = True, is_available:bool = False):
+
+        self.id = None
+        self.category_id = category_id
         self.title = title
-        self.short_description = short_description
+        self.short_description =  short_description
         self.description = description
         self.slug = slug
         self.permalink = permalink
-        self.isAvailable = isAvailable
+        self.is_available = is_available
+        self.sku = sku
         self.price = price
         self.regular_price = regular_price
         self.sale_price = sale_price
-        self.manage_stoke = manage_stoke
-        self.stoke_quantity = stoke_quantity
-        self.isVisible = isVisible
-        self.date_created_gmt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.date_modified_gmt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+        self.manage_stock = manage_stock
+        self.stock_quantity = stock_quantity
+        self.is_visible = is_visible
+        self.date_created_gmt = date_created_gmt
+        self.date_modified_gmt = date_modified_gmt
+       
+
     def create(self):
-        """Add the current product to list of products"""
-        Product.__products[self] = self.id_
+        self._product_list[self] = self.id
+        return self.__repr__()
 
-    def update(self, **kwargs):
-        """Update the current product object"""
-        for key, value in kwargs.items():
-            if key in self.__dict__:
-                if key in ('price', 'regular_price', 'sale_price', 'manage_stoke', 'stoke_quantity'):
-                    assert isinstance(value, (int, float)), f'{key} has to be a number'
-                    assert value >= 0, f'{key} has to be positive'
-                    self.__dict__[key] = value
-                else:
-                    self.__dict__[key] = value
-            else:
-                print(f'No attribute called {key}')
-        self.date_modified_gmt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    #this method shall be able read a product via id/uuid or ... from the the product datastructure (dictionary,list or maybe database)
+    def read(self, id_):
+        for key, value in Product._product_list.items():
+            if value == id_:
+                return key.__repr__()
+        return f"There is no product with {id_} id."
+
+    #this method shall be able to update product and amend the data structure for related product
+    def update(self, **attributes):
+        """Update the product
         
+        Change attributes of the product to new values specified in attributes variable.
+        
+        :param attributes: dictionary of attributes going to be updated
+        :type attributes: dict
+        :return: this method doesn't return anything
+        :rtype: None
+        """
+        
+        for attr, value in attributes.items():
+            if attr in self.__dict__:
+                self.__dict__[attr] = value
+
+    #this method shall be able to remove the product
     def delete(self):
-        """Delete the current product object"""
         try:
-            del Product.__products[self]
-            print('-'*5,f'\nProduct {self.title} (id {self.id_}) has been deleted','-'*5)
-        except:
-            print('-'*5,f'\nProduct {self.title} (id {self.id_}) has already been deleted','-'*5)
-            
-    def read(self):
-        """Return all attributes as a dictionary"""
-        return self.__dict__
+            del Product._product_list[self]
+        except: pass
 
+    #shall I get all products with staticmethod ? any better solution ? what about a class method ?
+    # what is the diffrence ?
+    # shall I seprate the datastructe from the class ? why? who? any better solution?
     @staticmethod
-    def read_all():
-        """return all products from list of products"""
-        return tuple(Product.__products.keys())
-        
+    def list_all():
+        return tuple(Product._product_list.keys())
+
+
     def __repr__(self) -> str:
-        return f"({self.title}, {self.id_})"
+        return f"the product with \n\
+        Product Id: N/A \n\
+        Title: {self.title} \n\
+        Short description: {self.short_description} \n\
+        Description: {self.description} \n\
+        Slug: {self.slug} \n\
+        Permanent link: {self.permalink} \n\
+        availablity: {self.is_available} \n\
+        Stock keeping Unit: {self.sku} \n\
+        Price: {self.price} \n\
+        Reqular Price: ${self.regular_price} \n\
+        Sale Price: ${self.sale_price} \n\
+        Manage Stock {self.manage_stock} \n\
+        Stock Quantity: {self.stock_quantity} \n\
+        Visible: {self.is_visible} \n\
+        Date Created: {datetime.utcfromtimestamp(self.date_created_gmt).strftime('%Y-%m-%d %H:%M:%S')} \n\
+        Date Modified: {datetime.utcfromtimestamp(self.date_modified_gmt).strftime('%Y-%m-%d %H:%M:%S')} \n\
+        "
+       
