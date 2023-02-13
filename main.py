@@ -1,13 +1,13 @@
+from product_injson_db import ProductInJsonDb
+from product_inmemory_db import ProductInMemoryDb
 import datetime
 from product import Product
-from circle import Circle
+import json
+
 
 def main():
-    print('Hello World')
-    
-
-    mycircle = Circle(8)
-
+    json_db = ProductInJsonDb()
+    ProductInMemoryDb.load_data(json_db.read_json_file())
     currentdatetime = datetime.datetime.utcnow()
     current_unixtimestamp = int(currentdatetime.timestamp())
 
@@ -42,18 +42,44 @@ def main():
         current_unixtimestamp,
         1)
  
-    product_one.create()
-    product_two.create()
+    #I would like to pass an Id when I create a  new product
+    product_one.create(1000, "j")
+    product_two.create(1008, "m")
+    
+    product_one.delete(1000)
+    product_one.delete(234234)
+    print(product_two.read(1000))
+    print(product_one.read(1008))
 
 
     for p in product_one.list_all():
         print(p)
 
-    print("-------------------------------------")
-    print("Does Product one instance of <<Circle>> class?")
-    print(isinstance(product_one, Circle))
-    print("Does Product one instance of <<Product>> class?")
-    print(isinstance(product_one, Product))
+    #print(product_one.__repr__())
+    #print(Product._product_list)
+ 
+    #print(product_one)
+
+
+    #print(product_one.__str__())
+
+    #print(Product.list_all())
+   # print(product_one.read(1001))
+   
+   # print("-------------------------------------")
+   # print("Does Product one instance of <<Circle>> class?")
+    # print(isinstance(product_one, Circle))
+   # print("Does Product one instance of <<Product>> class?")
+    # print(isinstance(product_one, Product))
+
+
+   # del product_one
+   # del product_two
+
+   # print(Product.list_all())
+      
+
+    #print(Product._product_list)
 
 if __name__ == '__main__':
     # This code won't run if this file is imported.
